@@ -271,7 +271,7 @@ foreach ($rssList as $rssItem) {
 		$_permalink = explode('?utm_source', $item->get_permalink());
 
 
-		$repmalinkFormated = ($rssItem['pseudoLinks'] == 1) ? $rssItem['sourseTextName'] . ' <span class="pseudolink" title="Источник публикации" data-target-' . $rssItem['sourceTarget'] . '="' . $_permalink[0] . '">' . $rssItem['name'] . '</span>' : $rssItem['sourseTextName'] . ' <!--noindex--> <a href="' . $_permalink[0] . '" rel="nofollow" target="_' . $rssItem['sourceTarget'] . '">' . $rssItem['name'] . '</a> <!--/noindex-->';
+		$repmalinkFormated = ($rssItem['pseudoLinks'] == 1) ? $rssItem['sourseTextName'] . ' <span class="pseudolink" title="Источник публикации" data-target-' . $rssItem['sourceTarget'] . '="' . $_permalink[0] . '">' . $rssItem['name'] . '</span>' : $rssItem['sourseTextName'] . ' <noindex> <a href="' . $_permalink[0] . '" rel="nofollow" target="_' . $rssItem['sourceTarget'] . '">' . $rssItem['name'] . '</a> </noindex>';
 
 		// Полная новость
 		$fullStoryTags = str_replace(array(', ', ',', ' ,'), ',', $rssItem['fullStoryTags']);
