@@ -196,12 +196,31 @@ $output = <<<HTML
 					<input type="text" value="{$max_news}" name="max_news" id="max_news" class="input" style="width: 60px" > <span class="ttp mini" title="Как правило канал отдаёт не более 10 элементов, так что ставить цифру больше не имеет смысла. К тому же импорт - довольно сложный процесс, который грузит сервер, имейте это ввиду.">?</span>
 				</div>
 			</div>
-			<!--<div class="form-field clearfix">
+			<!--===================-->
+			<div class="form-field clearfix">
+				<div class="lebel">Конвертирование новостей</div>
+				<div class="control">
+					<select name="date" id="date" class="styler">
+						<option value="1" {1}>BBCODES</option>
+						<option value="0" {0}>HTML</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-field clearfix">
+				<div class="lebel">Маска для поиска</div>
+				<div class="control">
+					<textarea name="cookie" id="cookie" class="input"><html>{get}</html></textarea> <span class="ttp mini" title="Маска поиска применяется для импортирования полных статей с сайтов Это регулярное выражение, которое использует следующие теги:'{skip}' - пропускает любые символы, а тег '{get}' - получает текст для новости">?</span>
+				</div>
+			</div>
+
+			<div class="form-field clearfix">
 				<div class="lebel">Cookies сайта</div>
 				<div class="control">
 					<textarea name="cookie" id="cookie" class="input">{$cookie}</textarea> <span class="ttp mini" title="Иногда для получения полной информации с сайта необходима авторизация на сайте. Вы можете задать cookies которые использует сайт для авторизации, например для сайтов на DataLife Engine необходимо ввести<br /><br /><b>dle_user_id=id</b><br /><b>dle_password=71820d7c524</b><br /><br />На каждой новой строке задается новое значение cookies.">?</span>
 				</div>
-			</div>-->
+			</div>
+			<!--===================-->
 			<div class="form-field clearfix">
 				<div class="lebel">Категория</div>
 				<div class="control">
@@ -276,6 +295,16 @@ $output = <<<HTML
 					<input type="checkbox" value="1" name="pseudoLinks" id="pseudoLinks" class="checkbox" {$pseudoLinks_checked}><label for="pseudoLinks"><span></span> Использовать "псевдоссылку" на источник</label> <span class="ttp mini" title="Если отметить чекбокс - то ссылка будет заменена на span, а &quot;открытие&quot; ссылки будет обрабатываться через JS. Подобная &quot;ссылка&quot; не видна поисковикам.">?</span>
 				</div>
 			</div>
+			<!--===================-->
+			<div class="form-field clearfix">
+				<div class="lebel">&nbsp;</div>
+				<div class="control">
+					<input type="checkbox" value="1" name="pseudoLinks" id="pseudoLinks" class="checkbox" {$pseudoLinks_checked}><label for="pseudoLinks"><span></span> Скрыть ссылку на источник</label> <span class="ttp mini" title="Если отметить чекбокс - то ссылка на источник не будет добавляться в конце публикации.">?</span>
+				</div>
+			</div>
+			<!--===================-->
+
+
 			<div class="form-field clearfix">
 				<div class="lebel">Открывать ссылку</div>
 				<div class="control">
