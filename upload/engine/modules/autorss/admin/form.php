@@ -212,8 +212,9 @@ $output = <<<HTML
 					<input type="text" value="{$max_news}" name="max_news" id="max_news" class="input" style="width: 60px" > <span class="ttp mini" title="Как правило канал отдаёт не более 10 элементов, так что ставить цифру больше не имеет смысла. К тому же импорт - довольно сложный процесс, который грузит сервер, имейте это ввиду.">?</span>
 				</div>
 			</div>
+
 			<!--===================-->
-			<div class="form-field clearfix">
+			<!-- <div class="form-field clearfix">
 				<div class="lebel">Конвертирование новостей</div>
 				<div class="control">
 					<select name="date" id="date" class="styler">
@@ -235,7 +236,7 @@ $output = <<<HTML
 				<div class="control">
 					<textarea name="cookie" id="cookie" class="input">{$cookie}</textarea> <span class="ttp mini" title="Иногда для получения полной информации с сайта необходима авторизация на сайте. Вы можете задать cookies которые использует сайт для авторизации, например для сайтов на DataLife Engine необходимо ввести<br /><br /><b>dle_user_id=id</b><br /><b>dle_password=71820d7c524</b><br /><br />На каждой новой строке задается новое значение cookies.">?</span>
 				</div>
-			</div>
+			</div> -->
 			<!--===================-->
 			<div class="form-field clearfix">
 				<div class="lebel">Категория</div>
