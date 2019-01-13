@@ -25,7 +25,9 @@ define('AUTORSS_DIR', ENGINE_DIR . '/modules/autorss');
 
 require_once(ENGINE_DIR . '/api/api.class.php');
 require_once(ENGINE_DIR . '/modules/functions.php');
-
+include_once ENGINE_DIR . '/classes/parse.class.php';
+	
+$parse = new ParseFilter();
 /**
  * Подключаем конфиг скрипта
  */
@@ -122,8 +124,8 @@ foreach ($rssList as $rssItem) {
 
 	// Массив с будущей новостью.
 	$newsItem = array();
+	$i_n = 0;
 	foreach ($items as $key => $item) {
-
 		// Текущее время с поправкой на зону (из настроек DLE).
 		$thistime = date("Y-m-d H:i:s", time() + ($config['date_adjust'] * 60));
 
@@ -132,7 +134,6 @@ foreach ($rssList as $rssItem) {
 		if ($itemDate <= $rssItem['lastdate']) {
 			continue;
 		}
-
 
 		// Автор новости
 		$_fia = $item->get_author();
@@ -159,7 +160,27 @@ foreach ($rssList as $rssItem) {
 		$shortStory = entryDecode($item->get_content());
 
 		$shortStory = safeParse($shortStory);
-
+		
+		$flag_continue = false;
+		if($rssItem['hashtag']!='') {
+			$hashtags = explode(",", $rssItem['hashtag']);
+			foreach($hashtags as $hashtag) {
+				$hash_option = explode("|", $hashtag);
+				if(preg_match("#\s*\\#{$hash_option[0]}\s*$#", $shortStory, $m)) {
+					if($m[0] == $hash_option[0]) {
+						if($hash_option[1] == 1) {
+							continue;
+						} else {
+							$flag_continue = true;
+							break;
+						}
+					}
+				} 
+			}
+		}
+		if($flag_continue) {
+			continue;
+		}
 		// Работаем с картинкой, если это не запрещено
 		if ($rssItem['dasableImages'] == 0) {
 			// Задаём папку для картинок
@@ -268,10 +289,11 @@ foreach ($rssList as $rssItem) {
 		$newsItem['short_story'] = $imageTag . textLimit($shortStory, $rssItem['textLimit']);
 
 		// URL источника
-		$_permalink = explode('?utm_source', $item->get_permalink());
+		if($rssItem['showLink']!=1) {
+			$_permalink = explode('?utm_source', $item->get_permalink());
 
-
-		$repmalinkFormated = ($rssItem['pseudoLinks'] == 1) ? $rssItem['sourseTextName'] . ' <span class="pseudolink" title="Источник публикации" data-target-' . $rssItem['sourceTarget'] . '="' . $_permalink[0] . '">' . $rssItem['name'] . '</span>' : $rssItem['sourseTextName'] . ' <noindex> <a href="' . $_permalink[0] . '" rel="nofollow" target="_' . $rssItem['sourceTarget'] . '">' . $rssItem['name'] . '</a> </noindex>';
+			$repmalinkFormated = ($rssItem['pseudoLinks'] == 1) ? $rssItem['sourseTextName'] . ' <span class="pseudolink" title="Источник публикации" data-target-' . $rssItem['sourceTarget'] . '="' . $_permalink[0] . '">' . $rssItem['name'] . '</span>' : $rssItem['sourseTextName'] . ' <noindex> <a href="' . $_permalink[0] . '" rel="nofollow" target="_' . $rssItem['sourceTarget'] . '">' . $rssItem['name'] . '</a> </noindex>';
+		}
 
 		// Полная новость
 		$fullStoryTags = str_replace(array(', ', ',', ' ,'), ',', $rssItem['fullStoryTags']);
@@ -286,13 +308,43 @@ foreach ($rssList as $rssItem) {
 				$newsItem['full_story'] = $imageTagBig . textLimit($shortStory, 0, false);
 				break;
 		}
-		$newsItem['full_story'] .= '<p class="source-link-wrapper">' . $repmalinkFormated . '</p>';
-
-		if ($rssItem['allow_br'] == '1') {
-			$newsItem['short_story'] = str_replace("\r\n", '<br />', $newsItem['short_story']);
-			$newsItem['full_story'] = str_replace("\r\n", '<br />', $newsItem['full_story']);
+		
+		if($rssItem['yandex_rss'] && $item->{'feed'}->{'data'}['child']['']['rss'][0]['child']['']['channel'][0]['child']['']['item'][$i_n]['child']['']['title'][0]['yandex:full-text']!='') {
+			$newsItem['full_story'] = safeParse($item->{'feed'}->{'data'}['child']['']['rss'][0]['child']['']['channel'][0]['child']['']['item'][$i_n]['child']['']['title'][0]['yandex:full-text']);
 		}
-
+		
+		$i_n++;
+		if($rssItem['showLink']!=1) {
+			$newsItem['full_story'] .= '<p class="source-link-wrapper">' . $repmalinkFormated . '</p>';
+		}
+		
+		if(strpos($newsItem['full_story'], "youtube.com") OR strpos($newsItem['full_story'], "youtu.be")) {
+			$newsItem['full_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
+				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
+					if(trim($match[0])!='') {
+						return "[media=https://" . $match[0] . "]";
+					}
+				}
+			}, $newsItem['full_story']);
+		}
+		if(strpos($newsItem['short_story'], "youtube.com") OR strpos($newsItem['short_story'], "youtu.be")) {
+			$newsItem['short_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
+				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
+					if(trim($match[0])!='') {
+						return "[media=https://" . $match[0] . "]";
+					}
+				}
+			}, $newsItem['short_story']);
+		}
+		
+		if(!$rssItem['allow_br']) {
+			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story']));
+			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story']));
+		} else {
+			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story'], false));
+			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story'], false));
+		}
+		
 		// Description & Keywords
 		$metatags = createMeta($shortStory);
 

@@ -27,6 +27,8 @@ $allow_main_checked   = ($elementItem['allow_main'] == 1) ? 'checked' : '';
 $allow_rating_checked = ($elementItem['allow_rating'] == 1) ? 'checked' : '';
 $allow_comm_checked   = ($elementItem['allow_comm'] == 1) ? 'checked' : '';
 $allow_br_checked     = ($elementItem['allow_br'] == 1) ? 'checked' : '';
+$showLink     		  = ($elementItem['showLink'] == 1) ? 'checked' : '';
+
 if ($elementItem['date'] == '1') {
 	$date_1 = 'selected';
 	$date_0 = '';
@@ -57,6 +59,8 @@ $newUserGroup          = ($elementItem['newUserGroup']) ? $elementItem['newUserG
 $user_groups           = get_groups($newUserGroup);
 $sourseTextName        = ($elementItem['sourseTextName']) ? $elementItem['sourseTextName'] : $cfg['channel']['sourseTextName'];
 $pseudoLinks_checked   = ($elementItem['pseudoLinks'] == 1) ? 'checked' : '';
+$yandex_rss   		   = ($elementItem['yandex_rss'] == 1) ? 'checked' : '';
+$hashtag   			   = $elementItem['hashtag'];
 
 if ($elementItem['sourceTarget'] == 'blank') {
 	$sourceTarget_blank = 'selected';
@@ -143,6 +147,18 @@ $output = <<<HTML
 				<div class="lebel">Теги для облака</div>
 				<div class="control">
 					<input type="text" value="{$tags}" name="tags" id="tags" class="input" > <span class="ttp mini" title="Указываются теги через запятую. Так же сюда будут добавлены теги из канала при парсинге, если они есть и если разрешено их добавление.">?</span>
+				</div>
+			</div>
+			<div class="form-field clearfix">
+				<div class="lebel">Хештеги</div>
+				<div class="control">
+					<textarea type="text" name="hashtag" id="hashtag" class="input">{$hashtag}</textarea> <span class="ttp mini" title="Указываются хештеги через запятую. #hash|1,#hash|0 - #hash|1 - новости с хештегом будут добавлены, #hash|0 - новости с хештегом будут пропущены.">?</span>
+				</div>
+			</div>
+			<div class="form-field clearfix">
+				<div class="lebel">&nbsp;</div>
+				<div class="control">
+					<input type="checkbox" value="1" name="yandex_rss" id="yandex_rss" class="checkbox" {$yandex_rss}><label for="yandex_rss"><span></span> Yandex.Rss</label>
 				</div>
 			</div>
 			<div class="form-field clearfix">
@@ -299,7 +315,7 @@ $output = <<<HTML
 			<div class="form-field clearfix">
 				<div class="lebel">&nbsp;</div>
 				<div class="control">
-					<input type="checkbox" value="1" name="pseudoLinks" id="pseudoLinks" class="checkbox" {$pseudoLinks_checked}><label for="pseudoLinks"><span></span> Скрыть ссылку на источник</label> <span class="ttp mini" title="Если отметить чекбокс - то ссылка на источник не будет добавляться в конце публикации.">?</span>
+					<input type="checkbox" value="1" name="showLink" id="showLink" class="checkbox" {$showLink}><label for="showLink"><span></span> Скрыть ссылку на источник</label> <span class="ttp mini" title="Если отметить чекбокс - то ссылка на источник не будет добавляться в конце публикации.">?</span>
 				</div>
 			</div>
 			<!--===================-->

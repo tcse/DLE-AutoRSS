@@ -25,6 +25,8 @@ $sourceTarget       = $db->safesql(trim($_REQUEST['sourceTarget']));
 $resizeType         = $db->safesql(trim($_REQUEST['resizeType']));
 $imgSize            = $db->safesql(trim($_REQUEST['imgSize']));
 $fullStoryTags      = $db->safesql(trim($_REQUEST['fullStoryTags']));
+$hashtag      		= $db->safesql(trim($_REQUEST['hashtag']));
+$yandex_rss       	= (int)$_REQUEST['yandex_rss'];
 $allowRssTags       = (int)$_REQUEST['allowRssTags'];
 $offline            = (int)$_REQUEST['offline'];
 $allow_main         = (int)$_REQUEST['allow_main'];
@@ -43,6 +45,7 @@ $dasableImages      = (int)$_REQUEST['dasableImages'];
 $grabImages         = (int)$_REQUEST['grabImages'];
 $saveOriginalImages = (int)$_REQUEST['saveOriginalImages'];
 $fullStoryType      = (int)$_REQUEST['fullStoryType'];
+$showLink      = (int)$_REQUEST['showLink'];
 
 if ($_REQUEST['action'] == 'add') {
 	if ($name == '') {
@@ -63,7 +66,7 @@ HTML;
 	}
 	else {
 
-		$addQuery = $db->query("INSERT INTO " . PREFIX . "_auto_rss (name, url, tags, cookie, category, noimage, authorLogin, sourseTextName, sourceTarget, resizeType, imgSize, allowRssTags, offline, allow_main, allow_rating, allow_comm, allow_br, date, max_news, checkDouble, textLimit, fullStoryType, fullStoryTags, chpuCut, allowNewUsers, newUserGroup, pseudoLinks, dasableImages, grabImages, saveOriginalImages) values ('$name', '$url', '$tags', '$cookie', '$category', '$noimage', '$authorLogin', '$sourseTextName', '$sourceTarget', '$resizeType', '$imgSize', '$allowRssTags', '$offline', '$allow_main', '$allow_rating', '$allow_comm', '$allow_br', '$date', '$max_news', '$checkDouble', '$textLimit', '$fullStoryType', '$fullStoryTags', '$chpuCut', '$allowNewUsers', '$newUserGroup', '$pseudoLinks', '$dasableImages', '$grabImages', '$saveOriginalImages')");
+		$addQuery = $db->query("INSERT INTO " . PREFIX . "_auto_rss (name, url, tags, cookie, category, noimage, authorLogin, sourseTextName, sourceTarget, resizeType, imgSize, allowRssTags, offline, allow_main, allow_rating, allow_comm, allow_br, date, max_news, checkDouble, textLimit, fullStoryType, fullStoryTags, chpuCut, allowNewUsers, newUserGroup, pseudoLinks, dasableImages, grabImages, saveOriginalImages, showLink, hashtag, yandex_rss) values ('$name', '$url', '$tags', '$cookie', '$category', '$noimage', '$authorLogin', '$sourseTextName', '$sourceTarget', '$resizeType', '$imgSize', '$allowRssTags', '$offline', '$allow_main', '$allow_rating', '$allow_comm', '$allow_br', '$date', '$max_news', '$checkDouble', '$textLimit', '$fullStoryType', '$fullStoryTags', '$chpuCut', '$allowNewUsers', '$newUserGroup', '$pseudoLinks', '$dasableImages', '$grabImages', '$saveOriginalImages', '$showLink', '$hashtag', '$yandex_rss')");
 		if ($addQuery == 1) {
 			$output = <<<HTML
 				<div class="decr">
@@ -127,7 +130,10 @@ HTML;
 			pseudoLinks        = '$pseudoLinks',
 			dasableImages      = '$dasableImages',
 			grabImages         = '$grabImages', 
-			saveOriginalImages = '$saveOriginalImages'  
+			saveOriginalImages = '$saveOriginalImages',
+			showLink		   = '$showLink',
+			hashtag			   = '$hashtag',
+			yandex_rss		   = '$yandex_rss' 
 			WHERE id = " . $elementToSave['id']);
 
 		if ($save_query == 1) {

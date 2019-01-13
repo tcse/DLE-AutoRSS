@@ -119,13 +119,13 @@ $cfg = array( // Пароль доступа к модулю
 	'moduleDescr'    => 'Модуль для автоматического парсинга и импорта RSS-лент.',
 
 	// Версия модуля, для установщика
-	'moduleVersion'  => '1.0.1',
+	'moduleVersion'  => '1.0.2',
 
 	// Дата выпуска модуля, для установщика
-	'moduleDate'     => '30.03.2018',
+	'moduleDate'     => '21.04.2018',
 
 	// Версии DLE, поддержваемые модулем, для установщика
-	'dleVersion'     => '9.8-12.x',
+	'dleVersion'     => '9.8-13.x',
 
 	// ID групп, для которых доступно управление модулем в админке.
 	'allowGroups'    => '1',
@@ -164,6 +164,9 @@ $cfg = array( // Пароль доступа к модулю
 			`saveOriginalImages` tinyint(1) NOT NULL DEFAULT '0',
 			`imgSize` char(20) NOT NULL DEFAULT '500x300',
 			`resizeType` char(20) NOT NULL DEFAULT 'auto',
+			`showLink` tinyint(1) NOT NULL DEFAULT '0',
+			`hashtag` text NOT NULL,
+			`yandex_rss` tinyint(1) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`id`)
 			) ENGINE=MyISAM /*!40101 DEFAULT CHARACTER SET " . COLLATE . " COLLATE " . COLLATE . "_general_ci */",),
 
