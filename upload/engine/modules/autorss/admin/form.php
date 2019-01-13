@@ -217,7 +217,7 @@ $output = <<<HTML
 			<!-- <div class="form-field clearfix">
 				<div class="lebel">Конвертирование новостей</div>
 				<div class="control">
-					<select name="date" id="date" class="styler">
+					<select name="rss_text_type" id="rss_text_type" class="styler">
 						<option value="1" {1}>BBCODES</option>
 						<option value="0" {0}>HTML</option>
 					</select>
@@ -227,17 +227,18 @@ $output = <<<HTML
 			<div class="form-field clearfix">
 				<div class="lebel">Маска для поиска</div>
 				<div class="control">
-					<textarea name="cookie" id="cookie" class="input"><html>{get}</html></textarea> <span class="ttp mini" title="Маска поиска применяется для импортирования полных статей с сайтов Это регулярное выражение, которое использует следующие теги:'{skip}' - пропускает любые символы, а тег '{get}' - получает текст для новости">?</span>
+					<textarea name="rss_search" id="rss_search" class="input"><html>{get}</html></textarea> <span class="ttp mini" title="Маска поиска применяется для импортирования полных статей с сайтов Это регулярное выражение, которое использует следующие теги:'{skip}' - пропускает любые символы, а тег '{get}' - получает текст для новости">?</span>
 				</div>
 			</div>
 
 			<div class="form-field clearfix">
 				<div class="lebel">Cookies сайта</div>
 				<div class="control">
-					<textarea name="cookie" id="cookie" class="input">{$cookie}</textarea> <span class="ttp mini" title="Иногда для получения полной информации с сайта необходима авторизация на сайте. Вы можете задать cookies которые использует сайт для авторизации, например для сайтов на DataLife Engine необходимо ввести<br /><br /><b>dle_user_id=id</b><br /><b>dle_password=71820d7c524</b><br /><br />На каждой новой строке задается новое значение cookies.">?</span>
+					<textarea name="rss_cookie" id="rss_cookie" class="input">{$rss_cookie}</textarea> <span class="ttp mini" title="Иногда для получения полной информации с сайта необходима авторизация на сайте. Вы можете задать cookies которые использует сайт для авторизации, например для сайтов на DataLife Engine необходимо ввести<br /><br /><b>dle_user_id=id</b><br /><b>dle_password=71820d7c524</b><br /><br />На каждой новой строке задается новое значение cookies.">?</span>
 				</div>
 			</div> -->
 			<!--===================-->
+			
 			<div class="form-field clearfix">
 				<div class="lebel">Категория</div>
 				<div class="control">
