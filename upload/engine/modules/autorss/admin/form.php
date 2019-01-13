@@ -27,6 +27,8 @@ $allow_main_checked   = ($elementItem['allow_main'] == 1) ? 'checked' : '';
 $allow_rating_checked = ($elementItem['allow_rating'] == 1) ? 'checked' : '';
 $allow_comm_checked   = ($elementItem['allow_comm'] == 1) ? 'checked' : '';
 $allow_br_checked     = ($elementItem['allow_br'] == 1) ? 'checked' : '';
+$showLink     		  = ($elementItem['showLink'] == 1) ? 'checked' : '';
+
 if ($elementItem['date'] == '1') {
 	$date_1 = 'selected';
 	$date_0 = '';
@@ -57,6 +59,8 @@ $newUserGroup          = ($elementItem['newUserGroup']) ? $elementItem['newUserG
 $user_groups           = get_groups($newUserGroup);
 $sourseTextName        = ($elementItem['sourseTextName']) ? $elementItem['sourseTextName'] : $cfg['channel']['sourseTextName'];
 $pseudoLinks_checked   = ($elementItem['pseudoLinks'] == 1) ? 'checked' : '';
+$yandex_rss   		   = ($elementItem['yandex_rss'] == 1) ? 'checked' : '';
+$hashtag   			   = $elementItem['hashtag'];
 
 if ($elementItem['sourceTarget'] == 'blank') {
 	$sourceTarget_blank = 'selected';
@@ -146,6 +150,18 @@ $output = <<<HTML
 				</div>
 			</div>
 			<div class="form-field clearfix">
+				<div class="lebel">Хештеги</div>
+				<div class="control">
+					<textarea type="text" name="hashtag" id="hashtag" class="input">{$hashtag}</textarea> <span class="ttp mini" title="Указываются хештеги через запятую. #hash|1,#hash|0 - #hash|1 - новости с хештегом будут добавлены, #hash|0 - новости с хештегом будут пропущены.">?</span>
+				</div>
+			</div>
+			<div class="form-field clearfix">
+				<div class="lebel">&nbsp;</div>
+				<div class="control">
+					<input type="checkbox" value="1" name="yandex_rss" id="yandex_rss" class="checkbox" {$yandex_rss}><label for="yandex_rss"><span></span> Yandex.Rss</label>
+				</div>
+			</div>
+			<div class="form-field clearfix">
 				<div class="lebel">&nbsp;</div>
 				<div class="control">
 					<input type="checkbox" value="1" name="allowRssTags" id="allowRssTags" class="checkbox" {$allowRssTags_checked}><label for="allowRssTags"><span></span> Брать теги из канала</label> <span class="ttp mini" title="Разрешить автоматическое добавление тегов из RSS канала (если есть). В качестве тегов берутся категории записи из канала.">?</span>
@@ -196,12 +212,32 @@ $output = <<<HTML
 					<input type="text" value="{$max_news}" name="max_news" id="max_news" class="input" style="width: 60px" > <span class="ttp mini" title="Как правило канал отдаёт не более 10 элементов, так что ставить цифру больше не имеет смысла. К тому же импорт - довольно сложный процесс, который грузит сервер, имейте это ввиду.">?</span>
 				</div>
 			</div>
-			<!--<div class="form-field clearfix">
+
+			<!--===================-->
+			<!-- <div class="form-field clearfix">
+				<div class="lebel">Конвертирование новостей</div>
+				<div class="control">
+					<select name="date" id="date" class="styler">
+						<option value="1" {1}>BBCODES</option>
+						<option value="0" {0}>HTML</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="form-field clearfix">
+				<div class="lebel">Маска для поиска</div>
+				<div class="control">
+					<textarea name="cookie" id="cookie" class="input"><html>{get}</html></textarea> <span class="ttp mini" title="Маска поиска применяется для импортирования полных статей с сайтов Это регулярное выражение, которое использует следующие теги:'{skip}' - пропускает любые символы, а тег '{get}' - получает текст для новости">?</span>
+				</div>
+			</div>
+
+			<div class="form-field clearfix">
 				<div class="lebel">Cookies сайта</div>
 				<div class="control">
 					<textarea name="cookie" id="cookie" class="input">{$cookie}</textarea> <span class="ttp mini" title="Иногда для получения полной информации с сайта необходима авторизация на сайте. Вы можете задать cookies которые использует сайт для авторизации, например для сайтов на DataLife Engine необходимо ввести<br /><br /><b>dle_user_id=id</b><br /><b>dle_password=71820d7c524</b><br /><br />На каждой новой строке задается новое значение cookies.">?</span>
 				</div>
-			</div>-->
+			</div> -->
+			<!--===================-->
 			<div class="form-field clearfix">
 				<div class="lebel">Категория</div>
 				<div class="control">
@@ -276,6 +312,16 @@ $output = <<<HTML
 					<input type="checkbox" value="1" name="pseudoLinks" id="pseudoLinks" class="checkbox" {$pseudoLinks_checked}><label for="pseudoLinks"><span></span> Использовать "псевдоссылку" на источник</label> <span class="ttp mini" title="Если отметить чекбокс - то ссылка будет заменена на span, а &quot;открытие&quot; ссылки будет обрабатываться через JS. Подобная &quot;ссылка&quot; не видна поисковикам.">?</span>
 				</div>
 			</div>
+			<!--===================-->
+			<div class="form-field clearfix">
+				<div class="lebel">&nbsp;</div>
+				<div class="control">
+					<input type="checkbox" value="1" name="showLink" id="showLink" class="checkbox" {$showLink}><label for="showLink"><span></span> Скрыть ссылку на источник</label> <span class="ttp mini" title="Если отметить чекбокс - то ссылка на источник не будет добавляться в конце публикации.">?</span>
+				</div>
+			</div>
+			<!--===================-->
+
+
 			<div class="form-field clearfix">
 				<div class="lebel">Открывать ссылку</div>
 				<div class="control">
