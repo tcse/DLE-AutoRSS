@@ -14,6 +14,8 @@ email:   pafnuty10@gmail.com
 /**
  * Подключаем всё, что нужно для работы модуля
  */
+
+
 @error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 @ini_set('display_errors', true);
 @ini_set('html_errors', false);
@@ -24,10 +26,13 @@ define('ENGINE_DIR', ROOT_DIR . '/engine');
 define('AUTORSS_DIR', ENGINE_DIR . '/modules/autorss');
 
 require_once(ENGINE_DIR . '/api/api.class.php');
+if (file_exists(ENGINE_DIR . '/classes/plugins.class.php')) {
+	require_once ENGINE_DIR . '/classes/plugins.class.php';
+}
 require_once(ENGINE_DIR . '/modules/functions.php');
-include_once ENGINE_DIR . '/classes/parse.class.php';
-	
-$parse = new ParseFilter();
+
+// $parse = new ParseFilter();
+
 /**
  * Подключаем конфиг скрипта
  */
@@ -340,10 +345,14 @@ foreach ($rssList as $rssItem) {
 		if(!$rssItem['allow_br']) {
 			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story']));
 			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story']));
-		} else {
+		} 
+
+/*
+		else {
 			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story'], false));
 			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story'], false));
 		}
+*/	
 		
 		// Description & Keywords
 		$metatags = createMeta($shortStory);
