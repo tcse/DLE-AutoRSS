@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dleplugin>
+	<name>Auto RSS Pro by TCSE-cms.com</name>
+	<description>Автоматическая публикация новостей из RSS каналов. AutoRSS Pro v.1.0.3	от 17.01.2019</description>
+	<icon>engine/skins/images/auto_rss.png</icon>
+	<version>1.0.3</version>
+	<dleversion>13.1</dleversion>
+	<versioncompare>greater</versioncompare>
+	<upgradeurl></upgradeurl>
+	<filedelete>1</filedelete>
+	<mysqlinstall>
+		<![CDATA[
+			INSERT INTO `{prefix}_admin_sections` 
+				(`name`, `title`, `descr`, `icon`, `allow_groups`) 
+			VALUES 
+				('auto_rss', 'Auto RSS Pro by TCSE', 'Автоматическая публикация новостей из RSS каналов', 'engine/skins/images/auto_rss.png', '1');
+
+			CREATE TABLE {prefix}_auto_rss (
+				`id` smallint(6) NOT NULL AUTO_INCREMENT,
+				`url` varchar(255) NOT NULL,
+				`name` text NOT NULL,
+				`tags` varchar(255) NOT NULL,
+	  			`allowRssTags` tinyint(1) NOT NULL DEFAULT '1',
+				`allow_main` tinyint(1) NOT NULL DEFAULT '1',
+				`allow_rating` tinyint(1) NOT NULL DEFAULT '1',
+				`allow_comm` tinyint(1) NOT NULL DEFAULT '1',
+				`allow_br` tinyint(1) NOT NULL DEFAULT '1',
+				`date` tinyint(1) NOT NULL DEFAULT '0',
+				`max_news` tinyint(4) NOT NULL DEFAULT '10',
+				`cookie` text NOT NULL,
+				`category` smallint(5) NOT NULL DEFAULT '0',
+				`lastdate` int(11) NOT NULL,
+				`offline` tinyint(4) NOT NULL DEFAULT '0',
+				`noimage` varchar(255) NOT NULL,
+				`checkDouble` tinyint(1) NOT NULL DEFAULT '1',
+				`textLimit` smallint(6) NOT NULL DEFAULT '500',
+				`fullStoryType` tinyint(1) NOT NULL DEFAULT '0',
+				`fullStoryTags` varchar(50) NOT NULL DEFAULT 'p, h2, h3, b, img, a',
+				`chpuCut` smallint(3) NOT NULL DEFAULT '30',
+				`authorLogin` varchar(50) NOT NULL,
+				`allowNewUsers` tinyint(1) NOT NULL DEFAULT '1',
+				`newUserGroup` tinyint(4) NOT NULL DEFAULT '3',
+				`sourseTextName` varchar(50) NOT NULL,
+				`pseudoLinks` tinyint(1) NOT NULL DEFAULT '1',
+				`sourceTarget` varchar(20) NOT NULL DEFAULT 'blank',
+				`dasableImages` tinyint(4) NOT NULL DEFAULT '0',
+				`grabImages` tinyint(1) NOT NULL DEFAULT '1',
+				`saveOriginalImages` tinyint(1) NOT NULL DEFAULT '0',
+				`imgSize` char(20) NOT NULL DEFAULT '500x300',
+				`resizeType` char(20) NOT NULL DEFAULT 'auto',
+				`showLink` tinyint(1) NOT NULL DEFAULT '0',
+				`hashtag` text NOT NULL,
+				`yandex_rss` tinyint(1) NOT NULL DEFAULT '0',
+				PRIMARY KEY (`id`)
+			) ENGINE=MyISAM /*!40101 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */
+		]]>
+		</mysqlinstall>
+	<mysqlupgrade><![CDATA[]]></mysqlupgrade>
+	<mysqlenable><![CDATA[]]></mysqlenable>
+	<mysqldisable><![CDATA[]]></mysqldisable>
+	<mysqldelete>
+		<![CDATA[
+			drop table `{prefix}_auto_rss`;
+			DELETE FROM `{prefix}_admin_sections` WHERE name='auto_rss';
+		]]>
+			
+		</mysqldelete>
+</dleplugin>
