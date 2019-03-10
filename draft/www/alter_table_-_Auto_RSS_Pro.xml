@@ -4,7 +4,7 @@
 	<description>Автоматическая публикация новостей из RSS каналов.</description>
 	<icon>engine/skins/images/auto_rss.png</icon>
 	<version>1.0.3</version>
-	<dleversion>13.1</dleversion>
+	<dleversion>13.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl></upgradeurl>
 	<filedelete>1</filedelete>
@@ -20,7 +20,7 @@
 			VALUES 
 				('auto_rss', 'Auto RSS by Pafnuty', 'Автоматическая публикация новостей из RSS каналов', 'engine/skins/images/auto_rss.png', '1');
 
-			CREATE TABLE {prefix}_auto_rss (
+			ALTER TABLE {prefix}_auto_rss (
 				`id` smallint(6) NOT NULL AUTO_INCREMENT,
 				`url` varchar(255) NOT NULL,
 				`name` text NOT NULL,

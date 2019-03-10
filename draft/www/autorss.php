@@ -23,7 +23,7 @@ email:   pafnuty10@gmail.com
 
 define('ROOT_DIR', dirname(__FILE__));
 define('ENGINE_DIR', ROOT_DIR . '/engine');
-define('AUTORSS_DIR', ENGINE_DIR . '/modules/auto_rss_pro');
+define('AUTORSS_DIR', ENGINE_DIR . '/modules/autorss');
 
 require_once(ENGINE_DIR . '/api/api.class.php');
 if (file_exists(ENGINE_DIR . '/classes/plugins.class.php')) {
