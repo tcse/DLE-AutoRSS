@@ -375,12 +375,12 @@ foreach ($rssList as $rssItem) {
 		// Разрешить на главной
 		$newsItem['allow_main'] = $rssItem['allow_main'];
 
-		// Категории источника (они же теги)
-		$tags    = $item->get_category();
-		$rssTags = false;
-		if ($tags) {
-			$rssTags = entryDecode($tags->get_term());
-		}
+		$rssTags = '';
+		foreach ($item->get_categories() as $tags)
+			{
+				$rssTags .= $tags->get_label() . ',';
+
+			}
 		$_rsst  = explode(', ', $rssTags);
 		$_itags = explode(', ', $rssItem['tags']);
 
