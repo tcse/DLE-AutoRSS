@@ -39,8 +39,11 @@ Auto Rss Pro (v1.0.2)
 **Обновление с версии 0.7 до 1.03**
 Для обновления БД действующего сайта необходимо через PMA сделать запрос
 
-ALTER TABLE  `dle_auto_rss` ADD  `showLink` TINYINT( 1 ) NOT NULL DEFAULT  '0' ,
-ADD  `hashtag` TEXT NOT NULL ,
-ADD  `yandex_rss` TINYINT( 1 ) NOT NULL DEFAULT  '0' ;
+	ALTER TABLE  `dle_auto_rss` ADD  `showLink` TINYINT( 1 ) NOT NULL DEFAULT  '0' ,
+	ADD  `hashtag` TEXT NOT NULL ,
+	ADD  `yandex_rss` TINYINT( 1 ) NOT NULL DEFAULT  '0' ;
+
+
 где dle_auto_rss
+
 это имя таблицы с вашим префиксом.
