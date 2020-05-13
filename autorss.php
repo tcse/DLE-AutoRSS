@@ -3,7 +3,7 @@
 =============================================================================
 AutoRSS для DLE - автоматический парсинг и импорт RSS-лент в DLE.
 =============================================================================
-Автор:   ПафНутиЙ 
+Автор:   ПафНутиЙ
 URL:     http://pafnuty.name/
 twitter: https://twitter.com/pafnuty_name
 google+: http://gplus.to/pafnuty
@@ -14,6 +14,8 @@ email:   pafnuty10@gmail.com
 /**
  * Подключаем всё, что нужно для работы модуля
  */
+
+
 @error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 @ini_set('display_errors', true);
 @ini_set('html_errors', false);
@@ -24,7 +26,12 @@ define('ENGINE_DIR', ROOT_DIR . '/engine');
 define('AUTORSS_DIR', ENGINE_DIR . '/modules/autorss');
 
 require_once(ENGINE_DIR . '/api/api.class.php');
+if (file_exists(ENGINE_DIR . '/classes/plugins.class.php')) {
+	require_once ENGINE_DIR . '/classes/plugins.class.php';
+}
 require_once(ENGINE_DIR . '/modules/functions.php');
+
+// $parse = new ParseFilter();
 
 /**
  * Подключаем конфиг скрипта
@@ -70,7 +77,7 @@ $rssWheres = implode(' AND ', $listWhere);
 $rssList = $db->super_query("SELECT * FROM " . PREFIX . "_auto_rss WHERE " . $rssWheres . $limit, true);
 $qi++;
 
-require_once(AUTORSS_DIR . '/autoloader.php');
+require_once(AUTORSS_DIR . '/library/SimplePie.php');
 
 
 foreach ($rssList as $rssItem) {
@@ -122,17 +129,16 @@ foreach ($rssList as $rssItem) {
 
 	// Массив с будущей новостью.
 	$newsItem = array();
+	$i_n = 0;
 	foreach ($items as $key => $item) {
-
 		// Текущее время с поправкой на зону (из настроек DLE).
 		$thistime = date("Y-m-d H:i:s", time() + ($config['date_adjust'] * 60));
 
 		// Определяем последнюю дату доступа к каналу и откидываем те новости, которые уже были обработаны ранее
-		$itemDate = strtotime($item->get_date());
+		$itemDate = (strtotime($item->get_date()) + ($config['date_adjust'] * 60));
 		if ($itemDate <= $rssItem['lastdate']) {
 			continue;
 		}
-
 
 		// Автор новости
 		$_fia = $item->get_author();
@@ -143,6 +149,7 @@ foreach ($rssList as $rssItem) {
 			$feedItemAutor = $rssItem['authorLogin'];
 		}
 		$newsItem['autor'] = ($rssItem['allowNewUsers'] == '1') ? $feedItemAutor : $rssItem['authorLogin'];
+		$newsItem['autor'] = str_replace(array("`", "'"), '', $newsItem['autor']);
 
 		// Дата новости
 		$newsItem['date'] = ($rssItem['date'] == '1') ? $thistime : $item->get_date('Y-m-d H:i:s');
@@ -158,7 +165,27 @@ foreach ($rssList as $rssItem) {
 		$shortStory = entryDecode($item->get_content());
 
 		$shortStory = safeParse($shortStory);
-
+		
+		$flag_continue = false;
+		if($rssItem['hashtag']!='') {
+			$hashtags = explode(",", $rssItem['hashtag']);
+			foreach($hashtags as $hashtag) {
+				$hash_option = explode("|", $hashtag);
+				if(preg_match("#\s*\\#{$hash_option[0]}\s*$#", $shortStory, $m)) {
+					if($m[0] == $hash_option[0]) {
+						if($hash_option[1] == 1) {
+							continue;
+						} else {
+							$flag_continue = true;
+							break;
+						}
+					}
+				} 
+			}
+		}
+		if($flag_continue) {
+			continue;
+		}
 		// Работаем с картинкой, если это не запрещено
 		if ($rssItem['dasableImages'] == 0) {
 			// Задаём папку для картинок
@@ -267,10 +294,11 @@ foreach ($rssList as $rssItem) {
 		$newsItem['short_story'] = $imageTag . textLimit($shortStory, $rssItem['textLimit']);
 
 		// URL источника
-		$_permalink = explode('?utm_source', $item->get_permalink());
+		if($rssItem['showLink']!=1) {
+			$_permalink = explode('?utm_source', $item->get_permalink());
 
-
-		$repmalinkFormated = ($rssItem['pseudoLinks'] == 1) ? $rssItem['sourseTextName'] . ' <span class="pseudolink" title="Источник публикации" data-target-' . $rssItem['sourceTarget'] . '="' . $_permalink[0] . '">' . $rssItem['name'] . '</span>' : $rssItem['sourseTextName'] . ' <noindex> <a href="' . $_permalink[0] . '" rel="nofollow" target="_' . $rssItem['sourceTarget'] . '">' . $rssItem['name'] . '</a> </noindex>';
+			$repmalinkFormated = ($rssItem['pseudoLinks'] == 1) ? $rssItem['sourseTextName'] . ' <span class="pseudolink" title="Источник публикации" data-target-' . $rssItem['sourceTarget'] . '="' . $_permalink[0] . '">' . $rssItem['name'] . '</span>' : $rssItem['sourseTextName'] . ' <i> <a href="' . $_permalink[0] . '" rel="nofollow" target="_' . $rssItem['sourceTarget'] . '">' . $rssItem['name'] . '</a> </i>';
+		}
 
 		// Полная новость
 		$fullStoryTags = str_replace(array(', ', ',', ' ,'), ',', $rssItem['fullStoryTags']);
@@ -285,13 +313,47 @@ foreach ($rssList as $rssItem) {
 				$newsItem['full_story'] = $imageTagBig . textLimit($shortStory, 0, false);
 				break;
 		}
-		$newsItem['full_story'] .= '<p class="source-link-wrapper">' . $repmalinkFormated . '</p>';
-
-		if ($rssItem['allow_br'] == '1') {
-			$newsItem['short_story'] = str_replace("\r\n", '<br />', $newsItem['short_story']);
-			$newsItem['full_story'] = str_replace("\r\n", '<br />', $newsItem['full_story']);
+		
+		if($rssItem['yandex_rss'] && $item->{'feed'}->{'data'}['child']['']['rss'][0]['child']['']['channel'][0]['child']['']['item'][$i_n]['child']['']['title'][0]['yandex:full-text']!='') {
+			$newsItem['full_story'] = safeParse($item->{'feed'}->{'data'}['child']['']['rss'][0]['child']['']['channel'][0]['child']['']['item'][$i_n]['child']['']['title'][0]['yandex:full-text']);
 		}
+		
+		$i_n++;
+		if($rssItem['showLink']!=1) {
+			$newsItem['full_story'] .= '<p class="source-link-wrapper">' . $repmalinkFormated . '</p>';
+		}
+		
+		if(strpos($newsItem['full_story'], "youtube.com") OR strpos($newsItem['full_story'], "youtu.be")) {
+			$newsItem['full_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
+				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
+					if(trim($match[0])!='') {
+						return "[media=https://" . $match[0] . "]";
+					}
+				}
+			}, $newsItem['full_story']);
+		}
+		if(strpos($newsItem['short_story'], "youtube.com") OR strpos($newsItem['short_story'], "youtu.be")) {
+			$newsItem['short_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
+				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
+					if(trim($match[0])!='') {
+						return "[media=https://" . $match[0] . "]";
+					}
+				}
+			}, $newsItem['short_story']);
+		}
+		
+		if(!$rssItem['allow_br']) {
+			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story']));
+			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story']));
+		} 
 
+/*
+		else {
+			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story'], false));
+			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story'], false));
+		}
+*/	
+		
 		// Description & Keywords
 		$metatags = createMeta($shortStory);
 
@@ -313,20 +375,12 @@ foreach ($rssList as $rssItem) {
 		// Разрешить на главной
 		$newsItem['allow_main'] = $rssItem['allow_main'];
 
-		// Категории источника (они же теги)
-		
-		//$tags    = $item->get_category();
-		//$rssTags = false;
-		//if ($tags) {
-		//	$rssTags = entryDecode($tags->get_term());
-		//}
-
 		$rssTags = '';
 		foreach ($item->get_categories() as $tags)
 			{
 				$rssTags .= $tags->get_label() . ',';
-			}
 
+			}
 		$_rsst  = explode(', ', $rssTags);
 		$_itags = explode(', ', $rssItem['tags']);
 
@@ -355,7 +409,7 @@ foreach ($rssList as $rssItem) {
 			$newsAuthor = $curUser['name'];
 
 			if (!$curUser) {
-				$newUser      = $db->safesql($newsItem['autor']);
+				$newUser      = $db->safesql(str_replace("'", '', $newsItem['autor']));
 				$translAuthor = translit($newUser);
 				$password     = textLimit($translAuthor, 3, false) . '_' . generateHash();
 				$email        = trim($translAuthor . '@' . str_replace(array('http://', '/'), '', $config['http_home_url']));
@@ -388,57 +442,42 @@ foreach ($rssList as $rssItem) {
 		if ($newsItem['title'] != "" && trim($newsItem['short_story']) != "" && $cfg['test'] == false && $existTitle == 0) {
 			$db->query("INSERT INTO " . PREFIX . "_post
 				(
-					date, 
-					autor, 
-					short_story, 
-					full_story, 
-					xfields, 
-					title, 
-					descr, 
-					keywords, 
-					category, 
-					alt_name, 
-					allow_comm, 
-					approve, 
-					allow_main, 
-					allow_br, 
+					date,
+					autor,
+					short_story,
+					full_story,
+					xfields,
+					title,
+					descr,
+					keywords,
+					category,
+					alt_name,
+					allow_comm,
+					approve,
+					allow_main,
+					allow_br,
 					tags
-				) 
+				)
 				values (
-					'" . $newsItem['date'] . "', 
-					'$newsAuthor', 
-					'" . $newsItem['short_story'] . "', 
-					'" . $newsItem['full_story'] . "', 
-					'', 
-					'" . $newsItem['title'] . "', 
-					'" . $newsItem['descr'] . "', 
-					'" . $newsItem['keywords'] . "', 
-					'" . $newsItem['category'] . "', 
-					'" . $newsItem['alt_name'] . "', 
-					'" . $newsItem['allow_comm'] . "', 
-					'" . $newsItem['approve'] . "', 
-					'" . $newsItem['allow_main'] . "', 
-					'" . $newsItem['allow_br'] . "', 
+					'" . $newsItem['date'] . "',
+					'$newsAuthor',
+					'" . $newsItem['short_story'] . "',
+					'" . $newsItem['full_story'] . "',
+					'',
+					'" . $newsItem['title'] . "',
+					'" . $newsItem['descr'] . "',
+					'" . $newsItem['keywords'] . "',
+					'" . $newsItem['category'] . "',
+					'" . $newsItem['alt_name'] . "',
+					'" . $newsItem['allow_comm'] . "',
+					'" . $newsItem['approve'] . "',
+					'" . $newsItem['allow_main'] . "',
+					'" . $newsItem['allow_br'] . "',
 					'" . $newsItem['tags'] . "'
 				)");
 			$row['id'] = $db->insert_id();
 
 			$db->query("INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, votes, disable_index, access) VALUES('{$row['id']}', '" . $newsItem['allow_rate'] . "', '0', '0', '')");
-
-			$db->query("INSERT INTO ".PREFIX. "_post_extras_cats 
-			    (
-				    id, 
-				    news_id, 
-				    cat_id 
-			    ) 
-				VALUES
-				    (
-				    	'',
-					    '{$row['id']}', 
-					    '" . $newsItem['category'] . "'
-				    )"
-			);
-
 			$db->query("UPDATE " . USERPREFIX . "_users set news_num=news_num+1 where name='{$newsAuthor}'");
 
 			$summary[$i]['items'][$key]['title'] = $newsItem['title'];
