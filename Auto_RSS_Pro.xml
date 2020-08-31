@@ -3,8 +3,8 @@
 	<name>Auto RSS Pro by TCSE-cms.com</name>
 	<description>Автоматическая публикация новостей из RSS каналов.</description>
 	<icon>engine/skins/images/auto_rss.png</icon>
-	<version>1.0.3</version>
-	<dleversion>13.1</dleversion>
+	<version>1.0.5</version>
+	<dleversion>13.0</dleversion>
 	<versioncompare>greater</versioncompare>
 	<upgradeurl></upgradeurl>
 	<filedelete>1</filedelete>
