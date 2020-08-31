@@ -372,6 +372,7 @@ foreach ($rssList as $rssItem) {
 		// Разрешить на главной
 		$newsItem['allow_main'] = $rssItem['allow_main'];
 
+		// Категории источника (они же теги)
 		$rssTags = '';
 		foreach ($item->get_categories() as $tags)
 			{
