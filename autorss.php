@@ -346,13 +346,10 @@ foreach ($rssList as $rssItem) {
 			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story']));
 			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story']));
 		} 
-
-/*
 		else {
 			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story'], false));
 			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story'], false));
 		}
-*/	
 		
 		// Description & Keywords
 		$metatags = createMeta($shortStory);
