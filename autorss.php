@@ -323,33 +323,33 @@ foreach ($rssList as $rssItem) {
 			$newsItem['full_story'] .= '<p class="source-link-wrapper">' . $repmalinkFormated . '</p>';
 		}
 		
-		if(strpos($newsItem['full_story'], "youtube.com") OR strpos($newsItem['full_story'], "youtu.be")) {
-			$newsItem['full_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
-				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
-					if(trim($match[0])!='') {
-						return "[media=https://" . $match[0] . "]";
-					}
-				}
-			}, $newsItem['full_story']);
-		}
-		if(strpos($newsItem['short_story'], "youtube.com") OR strpos($newsItem['short_story'], "youtu.be")) {
-			$newsItem['short_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
-				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
-					if(trim($match[0])!='') {
-						return "[media=https://" . $match[0] . "]";
-					}
-				}
-			}, $newsItem['short_story']);
-		}
+		// if(strpos($newsItem['full_story'], "youtube.com") OR strpos($newsItem['full_story'], "youtu.be")) {
+// 			$newsItem['full_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
+// 				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
+// 					if(trim($match[0])!='') {
+// 						return "[media=https://" . $match[0] . "]";
+// 					}
+// 				}
+// 			}, $newsItem['full_story']);
+// 		}
+// 		if(strpos($newsItem['short_story'], "youtube.com") OR strpos($newsItem['short_story'], "youtu.be")) {
+// 			$newsItem['short_story'] = preg_replace_callback('/<iframe[^>]*src\s*=\s*"?https?:\/\/[^\s"\/]*(youtube.com|youtu.be)(?:\/[^\s"]*)?"?[^>]*>.*?<\/iframe>/i', function($mach) {
+// 				if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $mach[0], $match)) {
+// 					if(trim($match[0])!='') {
+// 						return "[media=https://" . $match[0] . "]";
+// 					}
+// 				}
+// 			}, $newsItem['short_story']);
+// 		}
 		
 		if(!$rssItem['allow_br']) {
 			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story']));
 			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story']));
 		} 
-		else {
-			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story'], false));
-			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story'], false));
-		}
+		// else {
+// 			$newsItem['full_story'] = $db->safesql($parse->BB_Parse($newsItem['full_story'], false));
+// 			$newsItem['short_story'] = $db->safesql($parse->BB_Parse($newsItem['short_story'], false));
+// 		}
 		
 		// Description & Keywords
 		$metatags = createMeta($shortStory);
