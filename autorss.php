@@ -372,12 +372,13 @@ foreach ($rssList as $rssItem) {
 		// Разрешить на главной
 		$newsItem['allow_main'] = $rssItem['allow_main'];
 
-		// Категории источника (они же теги)
-		$tags    = $item->get_category();
-		$rssTags = false;
-		if ($tags) {
-			$rssTags = entryDecode($tags->get_term());
-		}
+		// Категории источника (они же теги) фикс https://dle-faq.ru/faq/common/25760-kak-zapisyvat-v-bd-vse-bloki-iz-rss-lenty-pri-pomoi-modulya-autrss.html#comment-id-71866
+		$rssTags = '';
+		foreach ($item->get_categories() as $tags)
+			{
+				$rssTags .= $tags->get_label() . ',';
+
+			}
 		$_rsst  = explode(', ', $rssTags);
 		$_itags = explode(', ', $rssItem['tags']);
 
@@ -475,7 +476,22 @@ foreach ($rssList as $rssItem) {
 			$row['id'] = $db->insert_id();
 
 			$db->query("INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, votes, disable_index, access) VALUES('{$row['id']}', '" . $newsItem['allow_rate'] . "', '0', '0', '')");
-			$db->query("UPDATE " . USERPREFIX . "_users set news_num=news_num+1 where name='{$newsAuthor}'");
+			// Исправление ошибки вывода в категориях для DLE 13.3 https://github.com/tcse/DLE-AutoRSS_Pro/commit/17d424c27ff88ee4c00d7e45410b5e43a0ee6375 
+			$db->query("INSERT INTO ".PREFIX. "_post_extras_cats 
+ 			    (
+ 				    id, 
+ 				    news_id, 
+ 				    cat_id 
+ 			    ) 
+ 				VALUES
+ 				    (
+ 				    	'',
+ 					    '{$row['id']}', 
+ 					    '" . $newsItem['category'] . "'
+ 				    )"
+ 			);
+ 			
+ 			$db->query("UPDATE " . USERPREFIX . "_users set news_num=news_num+1 where name='{$newsAuthor}'");
 
 			$summary[$i]['items'][$key]['title'] = $newsItem['title'];
 			$summary[$i]['items'][$key]['link']  = $config['http_home_url'] . '?newsid=' . $row['id'];
